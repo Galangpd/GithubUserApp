@@ -18,46 +18,38 @@ class FollowFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentFollowBinding.inflate(layoutInflater, container, false)
+        binding = FragmentFollowBinding.inflate(inflater, container, false)
         return binding.root
 
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        var username = arguments?.getString(ARG_USERNAME)
-        var position = 0
-
-//        Log.d("arguments: position", position.toString())
-//        Log.d("arguments: username", username.toString())
 
         super.onViewCreated(view, savedInstanceState)
-        val viewModel = ViewModelProvider(
-            this, ViewModelProvider.NewInstanceFactory()
-        ).get(DetailUserModel::class.java)
+        val position = arguments?.getInt(ARG_POSITION) ?: 0
+        val username = arguments?.getString(ARG_USERNAME)
+
+        val viewModel = ViewModelProvider(requireActivity()).get(DetailUserModel::class.java)
         binding.rvFollow.layoutManager = LinearLayoutManager(requireActivity())
 
-        arguments?.let {
-            position = it.getInt(ARG_POSITION)
-            username = it.getString(ARG_USERNAME)
-        }
         if (position == 1) {
             username?.let { viewModel.getFollowers(it) }
-            viewModel.followers.observe(viewLifecycleOwner) {
-                setUserFollow(it)
+            viewModel.followers.observe(viewLifecycleOwner) { followers ->
+                setUserFollow(followers)
             }
         } else {
             username?.let { viewModel.getFollowing(it) }
-            viewModel.following.observe(viewLifecycleOwner) {
-                setUserFollow(it)
+            viewModel.following.observe(viewLifecycleOwner) { following ->
+                setUserFollow(following)
             }
         }
 
+
     }
 
-    private fun setUserFollow(userfollow: List<ItemsItem>) {
+    private fun setUserFollow(userFollow: List<ItemsItem>) {
         val adapter = UserAdapter()
-        adapter.submitList(userfollow)
+        adapter.submitList(userFollow)
         binding.rvFollow.adapter = adapter
     }
 
@@ -65,4 +57,5 @@ class FollowFragment : Fragment() {
         const val ARG_POSITION = "position"
         const val ARG_USERNAME = "username"
     }
+
 }

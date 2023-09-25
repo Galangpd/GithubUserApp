@@ -30,10 +30,10 @@ class DetailUserModel : ViewModel() {
         private const val DETAILUSERNAME = "alif"
     }
 
-    init {
-        getFollowers(DETAILUSERNAME)
-        getFollowing(DETAILUSERNAME)
-    }
+//    init {
+//        getFollowers(DETAILUSERNAME)
+//        getFollowing(DETAILUSERNAME)
+//    }
 
     fun getDetailUser(username: String) {
         _isLoading.value = true
@@ -67,19 +67,22 @@ class DetailUserModel : ViewModel() {
                 call: Call<List<ItemsItem>>,
                 response: Response<List<ItemsItem>>
             ) {
+                _isLoading.value = false
                 if (response.isSuccessful) {
-                    _followers.value = response.body()
+                    _followers.postValue(response.body())
                 } else {
                     Log.e(TAG, "onFailure: ${response.message()}")
                 }
             }
 
             override fun onFailure(call: Call<List<ItemsItem>>, t: Throwable) {
+                _isLoading.value = false
                 Log.e(TAG, "onFailure: ${t.message.toString()}")
             }
 
         })
     }
+
 
     fun getFollowing(username : String) {
         _isLoading.value = true
@@ -89,14 +92,16 @@ class DetailUserModel : ViewModel() {
                 call: Call<List<ItemsItem>>,
                 response: Response<List<ItemsItem>>
             ) {
+                _isLoading.value = false
                 if (response.isSuccessful) {
-                    _following.value = response.body()
+                    _following.postValue(response.body())
                 } else {
                     Log.e(TAG, "onFailure: ${response.message()}")
                 }
             }
 
             override fun onFailure(call: Call<List<ItemsItem>>, t: Throwable) {
+                _isLoading.value = false
                 Log.e(TAG, "onFailure: ${t.message.toString()}")
             }
 
