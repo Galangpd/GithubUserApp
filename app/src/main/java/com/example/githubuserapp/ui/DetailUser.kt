@@ -42,6 +42,10 @@ class DetailUser : AppCompatActivity() {
             detailUserModel.getFollowing(username)
         }
 
+        detailUserModel.isLoading.observe(this){
+            showLoading(it)
+        }
+
 
 
         detailUserModel.detailUser.observe(this, Observer { detailUser ->
@@ -67,6 +71,10 @@ class DetailUser : AppCompatActivity() {
             tab.text = resources.getString(TAB_TITLES[position])
         }.attach()
         supportActionBar?.elevation = 0f
-}
+
+    }
+    private fun showLoading(isLoading: Boolean) {
+        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+    }
 
 }

@@ -1,7 +1,6 @@
 package com.example.githubuserapp.ui
 
 import android.content.Intent
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -30,16 +29,6 @@ class UserAdapter : ListAdapter<ItemsItem, UserAdapter.MyViewHolder>(DIFF_CALLBA
             val intent2 = Intent(holder.itemView.context, SectionsPagerAdapter::class.java)
             intent2.putExtra("USERNAME", user.login)
             holder.itemView.context.startActivity(intent)
-
-//            val position = holder.adapterPosition
-//            val username = getItem(position)?.login // Mengambil username dari data pada posisi yang diklik
-//
-//            val bundle = Bundle()
-//            bundle.putInt("POSITION_KEY", position)
-//            bundle.putString("USERNAME_KEY", username)
-//
-//            val fragment = FollowFragment()
-//            fragment.arguments = bundle
         }
     }
 

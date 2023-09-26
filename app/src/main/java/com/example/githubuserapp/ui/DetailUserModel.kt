@@ -27,13 +27,7 @@ class DetailUserModel : ViewModel() {
 
     companion object{
         const val TAG = "DetailUserModel"
-        private const val DETAILUSERNAME = "alif"
     }
-
-//    init {
-//        getFollowers(DETAILUSERNAME)
-//        getFollowing(DETAILUSERNAME)
-//    }
 
     fun getDetailUser(username: String) {
         _isLoading.value = true

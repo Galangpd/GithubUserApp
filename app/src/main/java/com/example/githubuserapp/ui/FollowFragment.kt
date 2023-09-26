@@ -1,7 +1,6 @@
 package com.example.githubuserapp.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,22 +34,30 @@ class FollowFragment : Fragment() {
         if (position == 1) {
             username?.let { viewModel.getFollowers(it) }
             viewModel.followers.observe(viewLifecycleOwner) { followers ->
+                viewModel.isLoading.observe(viewLifecycleOwner){
+                    showLoading(it)
+                }
                 setUserFollow(followers)
             }
         } else {
             username?.let { viewModel.getFollowing(it) }
             viewModel.following.observe(viewLifecycleOwner) { following ->
+                viewModel.isLoading.observe(viewLifecycleOwner){
+                    showLoading(it)
+                }
                 setUserFollow(following)
             }
         }
-
-
     }
 
     private fun setUserFollow(userFollow: List<ItemsItem>) {
         val adapter = UserAdapter()
         adapter.submitList(userFollow)
         binding.rvFollow.adapter = adapter
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
     companion object {
