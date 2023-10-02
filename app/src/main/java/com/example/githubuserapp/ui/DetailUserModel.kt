@@ -39,11 +39,10 @@ class DetailUserModel : ViewModel() {
             ) {
                 _isLoading.value = false
                 if (response.isSuccessful) {
-                    val detailUser = response.body()
-                    _detailUser.postValue(detailUser)
-                } else {
-                    Log.e(TAG, "onFailure: ${response.message()}")
-                }
+                    _detailUser.postValue(response.body())
+                }else {
+                        Log.e(TAG, "onFailure: ${response.message()}")
+                    }
             }
 
             override fun onFailure(call: Call<DetailUserResponse>, t: Throwable) {

@@ -2,7 +2,6 @@ package com.example.githubuserapp.data.retrofit
 
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -16,11 +15,18 @@ class ApiConfig {
                 chain.proceed(requestHeaders)
             }
             val client = OkHttpClient.Builder().addInterceptor(authInterceptor).build()
-            val retrofit =
-                Retrofit.Builder().baseUrl("https://api.github.com/").addConverterFactory(
-                    GsonConverterFactory.create()
-                ).client(client).build()
-            return retrofit.create(ApiService::class.java)
+
+            try {
+                val retrofit = Retrofit.Builder()
+                    .baseUrl("https://api.github.com/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(client)
+                    .build()
+                return retrofit.create(ApiService::class.java)
+            } catch (e: Exception) {
+                // Handle exception here
+                throw e
+            }
         }
     }
 }
