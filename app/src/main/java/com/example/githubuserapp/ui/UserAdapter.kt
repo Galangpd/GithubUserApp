@@ -23,7 +23,7 @@ class UserAdapter : ListAdapter<ItemsItem, UserAdapter.MyViewHolder>(DIFF_CALLBA
 
         holder.itemView.setOnClickListener {
             val user = getItem(position)
-            val intent = Intent(holder.itemView.context, DetailUser::class.java)
+            val intent = Intent(holder.itemView.context, DetailUserActivity::class.java)
             intent.putExtra("USERNAME", user.login)
 
             val intent2 = Intent(holder.itemView.context, SectionsPagerAdapter::class.java)
@@ -38,6 +38,7 @@ class UserAdapter : ListAdapter<ItemsItem, UserAdapter.MyViewHolder>(DIFF_CALLBA
             Glide.with(binding.imgItemPhoto).load(user.avatarUrl).transform(CircleCrop()).into(binding.imgItemPhoto)
         }
     }
+
     companion object {
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ItemsItem>() {
             override fun areItemsTheSame(oldItem: ItemsItem, newItem: ItemsItem): Boolean {

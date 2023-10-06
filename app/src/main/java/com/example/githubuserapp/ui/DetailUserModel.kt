@@ -25,13 +25,14 @@ class DetailUserModel : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+
     companion object{
         const val TAG = "DetailUserModel"
     }
 
     fun getDetailUser(username: String) {
         _isLoading.value = true
-        val client = ApiConfig.getApiService().getDetailUser(username)
+        val client = ApiConfig.apiService.getDetailUser(username)
         client.enqueue(object : Callback<DetailUserResponse> {
             override fun onResponse(
                 call: Call<DetailUserResponse>,
@@ -54,7 +55,7 @@ class DetailUserModel : ViewModel() {
 
     fun getFollowers(username : String) {
         _isLoading.value = true
-        val client = ApiConfig.getApiService().getFollowers(username)
+        val client = ApiConfig.apiService.getFollowers(username)
         client.enqueue(object : Callback<List<ItemsItem>> {
             override fun onResponse(
                 call: Call<List<ItemsItem>>,
@@ -79,7 +80,7 @@ class DetailUserModel : ViewModel() {
 
     fun getFollowing(username : String) {
         _isLoading.value = true
-        val client = ApiConfig.getApiService().getFollowing(username)
+        val client = ApiConfig.apiService.getFollowing(username)
         client.enqueue(object : Callback<List<ItemsItem>> {
             override fun onResponse(
                 call: Call<List<ItemsItem>>,

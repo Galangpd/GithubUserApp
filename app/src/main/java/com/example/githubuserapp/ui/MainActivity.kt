@@ -2,16 +2,19 @@ package com.example.githubuserapp.ui
 
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.githubuserapp.R
 import com.example.githubuserapp.data.response.ItemsItem
+import com.example.githubuserapp.data.setting.SettingPreferences
+import com.example.githubuserapp.data.setting.dataStore
 import com.example.githubuserapp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -54,6 +57,20 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+        val pref = SettingPreferences.getInstance(application.dataStore)
+        val settingViewModel = ViewModelProvider(this, ViewModelFactory(pref)).get(
+            SettingViewModel::class.java
+        )
+
+        settingViewModel.getThemeSettings().observe(this) { isDarkModeActive: Boolean ->
+            if (isDarkModeActive) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+        }
+
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -68,6 +85,10 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.action_setting -> {
                 val moveIntent = Intent(this@MainActivity, SettingActivity::class.java)
+                startActivity(moveIntent)
+            }
+            R.id.action_favorite -> {
+                val moveIntent = Intent(this@MainActivity, FavoriteUserActivity::class.java)
                 startActivity(moveIntent)
             }
         }

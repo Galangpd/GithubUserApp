@@ -1,26 +1,30 @@
 package com.example.githubuserapp.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.StringRes
-import androidx.lifecycle.Observer
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.example.githubuserapp.R
+import com.example.githubuserapp.data.database.FavoriteRoomDatabase
 import com.example.githubuserapp.data.database.FavoriteUser
 import com.example.githubuserapp.data.repository.FavoriteRepository
 import com.example.githubuserapp.databinding.ActivityDetailUserBinding
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class DetailUser : AppCompatActivity() {
+class DetailUserActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailUserBinding
 
-    private var isFavorite = false
+    private var isFavorite: Boolean = false
 
     companion object {
         @StringRes
@@ -36,23 +40,25 @@ class DetailUser : AppCompatActivity() {
         binding = ActivityDetailUserBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
         val detailUserModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(DetailUserModel::class.java)
 
         supportActionBar?.hide()
 
         val username = intent.getStringExtra("USERNAME")
-
+        val avatarUrl = intent.getStringExtra("AVATAR_URL")
         if (username != null) {
             detailUserModel.getDetailUser(username)
             detailUserModel.getFollowers(username)
             detailUserModel.getFollowing(username)
+            getFavoriteUsers(username)
         }
 
         detailUserModel.isLoading.observe(this){
             showLoading(it)
         }
 
-        detailUserModel.detailUser.observe(this, Observer { detailUser ->
+        detailUserModel.detailUser.observe(this) { detailUser ->
             val followers = detailUser.followers
             val following = detailUser.following
 
@@ -64,7 +70,7 @@ class DetailUser : AppCompatActivity() {
                 .load(detailUser.avatarUrl)
                 .transform(CircleCrop())
                 .into(binding.ivDetailPhoto)
-    })
+         }
 
         val sectionsPagerAdapter = SectionsPagerAdapter(this)
         val viewPager: ViewPager2 = binding.viewPager
@@ -77,12 +83,10 @@ class DetailUser : AppCompatActivity() {
         supportActionBar?.elevation = 0f
 
         binding.fabFavorite.setOnClickListener {
-            // Tangani aksi klik pada FAB di sini
             if (isFavorite) {
-                // Hapus user dari database favorite jika sudah ada
-//                removeFromFavorites()
+                removeFromFavorites()
+
             } else {
-                // Tambahkan user ke dalam database favorite jika belum ada
                 addToFavorites()
             }
         }
@@ -95,17 +99,41 @@ class DetailUser : AppCompatActivity() {
         val username = intent.getStringExtra("USERNAME")
         val avatarUrl = detailUserModel.detailUser.value?.avatarUrl
 
-        // Buat objek FavoriteUser
-        val favoriteUser = FavoriteUser(id = 0,username ?: "", avatarUrl)
+        val favoriteUser = FavoriteUser(id = 0,username ?: "",avatarUrl)
 
-        // Simpan objek ke dalam database favorit
         mFavoriteRepository.insert(favoriteUser)
 
-        // Ubah ikon FAB menjadi ikon favorit
         binding.fabFavorite.setImageResource(R.drawable.baseline_favorite_24)
 
-        // Set status user menjadi favorit
         isFavorite = true
+    }
+
+    private fun removeFromFavorites() {
+        val mFavoriteRepository = FavoriteRepository(application)
+        val username = intent.getStringExtra("USERNAME")
+
+        username?.let { mFavoriteRepository.delete(it) }
+
+        binding.fabFavorite.setImageResource(R.drawable.baseline_favorite_border_24)
+
+        isFavorite = false
+
+    }
+
+    private fun getFavoriteUsers(username: String) {
+        val userDao = FavoriteRoomDatabase.getDatabase(this).favoriteDao()
+        CoroutineScope(Dispatchers.IO).launch {
+            val getFavoriteUser = username.let { userDao.getUserFavorite(it) }
+            withContext(Dispatchers.Main) {
+                isFavorite = if (getFavoriteUser != null) {
+                    binding.fabFavorite.setImageResource(R.drawable.baseline_favorite_24)
+                    true
+                } else {
+                    binding.fabFavorite.setImageResource(R.drawable.baseline_favorite_border_24)
+                    false
+                }
+            }
+        }
     }
 
     private fun showLoading(isLoading: Boolean) {

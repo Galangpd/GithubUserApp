@@ -33,7 +33,7 @@ class MainViewModel : ViewModel() {
 
     fun getUser(toString : String) {
         _isLoading.value = true
-        val client = ApiConfig.getApiService().getUser(toString, "100")
+        val client = ApiConfig.apiService.getUser(toString, "100")
         client.enqueue(object : Callback<GithubResponse> {
             override fun onResponse(
                 call: Call<GithubResponse>,

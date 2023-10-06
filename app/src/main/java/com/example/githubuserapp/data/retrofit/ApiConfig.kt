@@ -7,26 +7,26 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class ApiConfig {
     companion object {
-        fun getApiService(): ApiService {
+
+        private const val BASE_URL = "https://api.github.com/"
+        private const val API_KEY = "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"
+        val apiService: ApiService by lazy {
             val authInterceptor = Interceptor { chain ->
                 val req = chain.request()
                 val requestHeaders = req.newBuilder()
-                    .addHeader("Authorization", "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").build()
+                    .addHeader("Authorization", API_KEY).build()
                 chain.proceed(requestHeaders)
             }
             val client = OkHttpClient.Builder().addInterceptor(authInterceptor).build()
 
-            try {
-                val retrofit = Retrofit.Builder()
-                    .baseUrl("https://api.github.com/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(client)
-                    .build()
-                return retrofit.create(ApiService::class.java)
-            } catch (e: Exception) {
-                // Handle exception here
-                throw e
-            }
-        }
+            Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build()
+                .create(ApiService::class.java)
+         }
+
+
     }
 }
